@@ -122,4 +122,5 @@ void debug_print_buf(buffer b) {
           -1, -1
 #endif
   );
+  free_buf(quoted);
 }

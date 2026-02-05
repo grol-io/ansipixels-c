@@ -1,6 +1,4 @@
-#include "buf.h"
-#include "log.h"
-#include "raw.h"
+#include "ansipixels.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/errno.h>
@@ -25,4 +23,28 @@ int main(void) {
   debug_print_buf(b);
   write_buf(STDOUT_FILENO, b);
   free_buf(b);
+
+  PASTE_MODE_ON();
+  // Read stuff from stdin until 'q' is pressed, echoing it back out:
+  write_str(STDOUT_FILENO, STR("Type something (press 'Ctrl-C' or 'Ctrl-D' to quit):\n"));
+  b = new_buf(4096);
+  while (1) {
+    b.size = 0; // clear buffer for reuse
+    ssize_t n = read_buf(STDIN_FILENO, &b);
+    if (n < 0) {
+      LOG_ERROR("Error reading from stdin: %s", strerror(errno));
+      break;
+    } else if (n == 0) {
+      LOG_DEBUG("No input read, trying again...");
+      continue; // no data, try again
+    }
+    debug_print_buf(b);
+    // write_buf(STDOUT_FILENO, b);
+    void *found;
+    if ((found = memchr(b.data, '\x03', b.size)) || (found = memchr(b.data, '\x04', b.size))) {
+      char *fc = (char *)found;
+      LOG_DEBUG("Exit character %d found at offset %zd, exiting.", *fc, fc - b.data);
+      break; // exit on 'Ctrl-C' or 'Ctrl-D' press
+    }
+  }
 }
