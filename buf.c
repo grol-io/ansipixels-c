@@ -4,11 +4,12 @@
 #include <string.h>
 
 buffer new_buf(size_t size) {
-    return (buffer){calloc(1, size), 0, size
+  return (buffer){calloc(1, size), 0, size
 #ifdef DEBUG
-    , 1
+                  ,
+                  1
 #endif
-    };
+  };
 }
 
 void free_buf(buffer b) {
@@ -36,7 +37,8 @@ size_t max(size_t a, size_t b) { return a > b ? a : b; }
 void append_data(buffer *dest, const char *data, size_t size) {
   size_t new_cap = dest->size + size;
   if (new_cap > dest->cap) {
-    new_cap = max(new_cap, dest->cap * 2); // double capacity to reduce future reallocs
+    new_cap = max(new_cap,
+                  dest->cap * 2); // double capacity to reduce future reallocs
     dest->data = realloc(dest->data, new_cap);
     dest->cap = new_cap;
 #ifdef DEBUG
@@ -56,9 +58,10 @@ void append_byte(buffer *dest, char byte) { append_data(dest, &byte, 1); }
 buffer slice_buf(buffer b, size_t start, size_t end) {
   return (buffer){b.data + start, end - start, 0
 #ifdef DEBUG
-  , 0
+                  ,
+                  0
 #endif
-    }; // 0 cap for subslice
+  }; // 0 cap for subslice
 }
 
 char to_hex_digit(int c) {
@@ -110,12 +113,13 @@ buffer debug_quote(const char *s, size_t size) {
 
 void debug_print_buf(buffer b) {
   buffer quoted = debug_quote(b.data, b.size);
-  fprintf(stderr, "buffer { data: %p = %s, size: %zu, cap: %zu, allocs: %d/%d }\n",
+  fprintf(stderr,
+          "buffer { data: %p = %s, size: %zu, cap: %zu, allocs: %d/%d }\n",
           (void *)b.data, quoted.data, b.size, b.cap,
 #ifdef DEBUG
-        b.allocs, quoted.allocs
+          b.allocs, quoted.allocs
 #else
-        -1,-1
+          -1, -1
 #endif
-        );
+  );
 }
