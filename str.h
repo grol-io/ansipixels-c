@@ -7,6 +7,6 @@ typedef struct str {
   const size_t size;
 } string;
 
-#define STR_LIT(s) ((string){(s), sizeof(s) - 1})
+#define STR(s) ((string){(s), sizeof(s) - 1})
 
 ssize_t write_str(int fd, string s);

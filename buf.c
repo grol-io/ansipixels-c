@@ -82,23 +82,23 @@ buffer debug_quote(const char *s, size_t size) {
     char c = s[i];
     switch (c) {
     case '\n':
-      append_str(&b, STR_LIT("\\n"));
+      append_str(&b, STR("\\n"));
       break;
     case '\r':
-      append_str(&b, STR_LIT("\\r"));
+      append_str(&b, STR("\\r"));
       break;
     case '\t':
-      append_str(&b, STR_LIT("\\t"));
+      append_str(&b, STR("\\t"));
       break;
     case '\\':
-      append_str(&b, STR_LIT("\\\\"));
+      append_str(&b, STR("\\\\"));
       break;
     case '"':
-      append_str(&b, STR_LIT("\\\""));
+      append_str(&b, STR("\\\""));
       break;
     default:
       if (c < 32 || c >= 127) {
-        append_str(&b, STR_LIT("\\x"));
+        append_str(&b, STR("\\x"));
         append_byte(&b, to_hex_digit((c >> 4) & 0xF));
         append_byte(&b, to_hex_digit(c & 0xF));
       } else {
