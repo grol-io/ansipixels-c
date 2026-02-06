@@ -38,8 +38,8 @@ int main(void) {
       break;
     } else if (n == 0) {
       // Because we block for at least 1 byte, this should not happen.
-      LOG_DEBUG("No input read, trying again...");
-      continue; // no data, try again
+      LOG_ERROR("Unexpected eof for raw stdin (%zd)", n);
+      break; // no data, try again
     }
     debug_print_buf(b);
     // write_buf(STDOUT_FILENO, b);
