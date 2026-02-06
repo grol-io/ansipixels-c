@@ -22,17 +22,20 @@ CFLAGS = $(OPTS) -Wall -Wextra -pedantic -Werror $(SAN) -DNO_COLOR=$(NO_COLOR) -
 
 LIB_OBJS:=buf.o str.o raw.o log.o timer.o ansipixels.o
 
-ansipixels: $(LIB_OBJS) main.o
-	$(CC) $(CFLAGS) -o $@ $^
+libansipixels.a: $(LIB_OBJS)
+	$(AR) rcs $@ $^
 
-fps: $(LIB_OBJS) fps.o
-	$(CC) $(CFLAGS) -o $@ $^
+ansipixels: main.o libansipixels.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+fps: fps.o libansipixels.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 run-fps: fps
 	./fps -n 10000 -t 1000
 
 clean:
-	rm -rf *.o *.dSYM ansipixels fps
+	rm -rf *.o *.dSYM ansipixels fps libansipixels.a dist/*
 
 update-headers:
 	./update_headers.sh

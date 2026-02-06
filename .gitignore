@@ -60,3 +60,4 @@ ansipixels
 *.s
 .cache
 fps
+dist/
