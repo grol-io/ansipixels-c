@@ -11,6 +11,29 @@
 
 static ap_t global_ap = NULL;
 
+static void ap_update_size(ap_t ap) {
+  struct winsize ws;
+  if (ioctl(ap->out, TIOCGWINSZ, &ws) < 0) {
+    LOG_ERROR("ioctl(TIOCGWINSZ) failed: %s", strerror(errno));
+    return;
+  }
+  if (ws.ws_col == ap->w && ws.ws_row == ap->h) {
+    LOG_DEBUG("Sigwinch: UNchanged size: %dx%d", ap->w, ap->h);
+    return; // no change
+  }
+  LOG_DEBUG("Sigwinch: CHANGED size: %dx%d -> %dx%d", ap->w, ap->h, ws.ws_col,
+            ws.ws_row);
+  ap->h = ws.ws_row;
+  ap->w = ws.ws_col;
+}
+
+static void handle_winch(int sig) {
+  LOG_DEBUG("Signal: received signal %d", sig);
+  if (global_ap) {
+    ap_update_size(global_ap);
+  }
+}
+
 void ap_cleanup(void) {
   if (!global_ap) {
     return; // nothing to clean up
@@ -31,9 +54,16 @@ ap_t ap_open(void) {
     return NULL;
   }
   ap_t ap = malloc(sizeof(struct ap));
+  ap->out = STDOUT_FILENO;
   ap->h = 0;
   ap->w = 0;
-  ap->out = STDOUT_FILENO;
+  ap_update_size(ap);
+  // Set up SIGWINCH handler without SA_RESTART so read() gets interrupted
+  struct sigaction sa = {0};
+  sa.sa_handler = handle_winch;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0; // Explicitly no SA_RESTART - we want EINTR
+  sigaction(SIGWINCH, &sa, NULL);
   global_ap = ap; // store in global for atexit cleanup if needed
   atexit(ap_cleanup);
   return ap;

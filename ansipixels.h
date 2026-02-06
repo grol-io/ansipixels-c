@@ -12,10 +12,12 @@
 #include "buf.h"
 #include "log.h"
 #include "raw.h"
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/errno.h>
+#include <sys/ioctl.h>
 
 typedef struct ap {
   int out;
