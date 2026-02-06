@@ -7,8 +7,3 @@
  * (C) 2026 Laurent Demailly <ldemailly at gmail> and contributors.
  * Licensed under Apache-2.0 (see LICENSE).
  */
-#pragma once
-
-int term_raw(void); // non 0 == error.
-
-void term_restore(void);

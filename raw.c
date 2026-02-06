@@ -1,3 +1,12 @@
+/**
+ * ansipixels-c:
+ * A C library for rendering fast Terminal User Interfaces (TUIs)
+ * using ANSI codes. Inspired by the Go library
+ * https://pkg.go.dev/fortio.org/terminal/ansipixels
+ *
+ * (C) 2026 Laurent Demailly <ldemailly at gmail> and contributors.
+ * Licensed under Apache-2.0 (see LICENSE).
+ */
 #include "raw.h"
 #include "log.h"
 #include <stdio.h>
@@ -67,9 +76,6 @@ int term_raw(void) {
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
     return 2;
   }
-
-  // Register restoration function to run on exit
-  atexit(term_restore);
   return 0;
 }
 

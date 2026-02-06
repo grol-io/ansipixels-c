@@ -1,3 +1,11 @@
+#
+# ansipixels-c:
+# A C library for rendering fast Terminal User Interfaces (TUIs)
+# using ANSI codes. Inspired by the Go library
+# https://pkg.go.dev/fortio.org/terminal/ansipixels
+#
+# (C) 2026 Laurent Demailly <ldemailly at gmail> and contributors.
+# No warranty implied or expressly granted. Licensed under Apache 2.0 (see LICENSE).
 
 all: ansipixels
 
@@ -9,12 +17,14 @@ SAN ?= -fsanitize=address
 NO_COLOR ?= 0
 CFLAGS = -g -Wall -Wextra -pedantic -Werror $(SAN) -DNO_COLOR=$(NO_COLOR) -DDEBUG=$(DEBUG)
 
-ansipixels: buf.o str.o raw.o log.o main.o
+ansipixels: buf.o str.o raw.o log.o ansipixels.o main.o
 	$(CC) $(CFLAGS) -o $@ $^
 	./$@
 
 clean:
 	rm -rf *.o *.dSYM ansipixels
 
+update-headers:
+	./update_headers.sh
 
-.PHONY: clean all format
+.PHONY: clean all format update-headers
