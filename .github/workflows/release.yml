@@ -42,11 +42,11 @@ jobs:
           mkdir -p "dist/${DIR_NAME}"
           cp fps ansipixels libansipixels.a *.h README.md LICENSE "dist/${DIR_NAME}/"
           cd dist
-          tar -czf ../${{ matrix.asset_name }}.tar.gz "${DIR_NAME}"
+          tar -czf "../${{ matrix.asset_name }}-${VERSION}.tar.gz" "${DIR_NAME}"
 
       - name: Create Release
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.2.1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ matrix.asset_name }}.tar.gz
+          files: ${{ matrix.asset_name }}-*.tar.gz
           # generate_release_notes: true
