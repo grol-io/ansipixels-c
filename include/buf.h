@@ -36,3 +36,7 @@ buffer slice_buf(buffer b, size_t start, size_t end);
 void quote_buf(buffer *b, const char *s, size_t size);
 buffer debug_quote(const char *s, size_t size);
 void debug_print_buf(buffer b);
+
+// mempbrk is like memchr but searches for any of the bytes in accept
+// and returns a pointer to the first occurrence in s, or NULL if not found.
+const char *mempbrk(const char *s, size_t n, const char *accept, size_t accept_len);

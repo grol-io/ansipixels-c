@@ -63,10 +63,9 @@ int main(void) {
     }
     debug_print_buf(b);
     // write_buf(STDOUT_FILENO, b);
-    void *found;
-    if ((found = memchr(b.data, '\x03', b.size)) ||
-        (found = memchr(b.data, '\x04', b.size))) {
-      char *fc = (char *)found;
+    const char *fc;
+    static const char exit_chars[] = {'\x03', '\x04'}; // Ctrl-C and Ctrl-D
+    if ((fc = mempbrk(b.data, b.size, exit_chars, sizeof(exit_chars)))!= NULL) {
       LOG_DEBUG("Exit character %d found at offset %zd, exiting.", *fc,
                 fc - b.data);
       break; // exit on 'Ctrl-C' or 'Ctrl-D' press
