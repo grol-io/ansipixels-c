@@ -30,16 +30,30 @@ int main(void) {
   write_buf(STDOUT_FILENO, b);
   free_buf(b);
 
+  LOG_INFO("Initial size: %dx%d", ap->w, ap->h);
   // Read from stdin in paste mode until 'Ctrl-C' or 'Ctrl-D' is pressed;
   // input is logged via the buffer debug print but not echoed to stdout
   ap_paste_on(ap);
   write_str(STDOUT_FILENO,
             STR("Type something (press 'Ctrl-C' or 'Ctrl-D' to quit):\n"));
   b = new_buf(4096);
+  int last_w = ap->w;
+  int last_h = ap->h;
+
   while (1) {
+    if (ap->w != last_w || ap->h != last_h) {
+      LOG_INFO("Size changed: %dx%d", ap->w, ap->h);
+      last_w = ap->w;
+      last_h = ap->h;
+    }
     b.size = 0; // clear buffer for reuse
     ssize_t n = read_buf(STDIN_FILENO, &b);
     if (n < 0) {
+      if (errno == EINTR) {
+        LOG_DEBUG(
+            "Read interrupted by signal, (likely SIGWINCH), continuing loop");
+        continue; // retry on signal
+      }
       LOG_ERROR("Error reading from stdin: %s", strerror(errno));
       break;
     } else if (n == 0) {
