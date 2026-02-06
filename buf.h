@@ -33,5 +33,6 @@ void append_byte(buffer *dest, char byte);
 
 buffer slice_buf(buffer b, size_t start, size_t end);
 
+void quote_buf(buffer *b, const char *s, size_t size);
 buffer debug_quote(const char *s, size_t size);
 void debug_print_buf(buffer b);

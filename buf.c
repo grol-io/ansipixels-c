@@ -87,45 +87,50 @@ buffer debug_quote(const char *s, size_t size) {
   // +2 for open and close quotes
   // +1 for guessing a likely \n = +4 even if no quoting end up actually needed
   buffer b = new_buf(size + 4);
-  append_byte(&b, '"');
+  quote_buf(&b, s, size);
+  return b;
+}
+
+void quote_buf(buffer *b, const char *s, size_t size) {
+  append_byte(b, '"');
   for (size_t i = 0; i < size; i++) {
     char c = s[i];
     switch (c) {
     case '\n':
-      append_str(&b, STR("\\n"));
+      append_str(b, STR("\\n"));
       break;
     case '\r':
-      append_str(&b, STR("\\r"));
+      append_str(b, STR("\\r"));
       break;
     case '\t':
-      append_str(&b, STR("\\t"));
+      append_str(b, STR("\\t"));
       break;
     case '\\':
-      append_str(&b, STR("\\\\"));
+      append_str(b, STR("\\\\"));
       break;
     case '"':
-      append_str(&b, STR("\\\""));
+      append_str(b, STR("\\\""));
       break;
     default:
       if (c < 32 || c >= 127) {
-        append_str(&b, STR("\\x"));
-        append_byte(&b, to_hex_digit((c >> 4) & 0xF));
-        append_byte(&b, to_hex_digit(c & 0xF));
+        append_str(b, STR("\\x"));
+        append_byte(b, to_hex_digit((c >> 4) & 0xF));
+        append_byte(b, to_hex_digit(c & 0xF));
       } else {
-        append_byte(&b, c);
+        append_byte(b, c);
       }
     }
   }
-  append_byte(&b, '"');
-  append_byte(&b, '\0'); // null-terminate for printing
-  return b;
+  append_byte(b, '"');
+  append_byte(b, '\0'); // null-terminate for printing
 }
 
 void debug_print_buf(buffer b) {
   buffer quoted = debug_quote(b.data, b.size);
   fprintf(stderr,
-          GREEN "INF buffer { data: %p = %s, size: %zu, cap: %zu, allocs: %d/%d "
-               "}" END_LOG,
+          GREEN
+          "INF buffer { data: %p = %s, size: %zu, cap: %zu, allocs: %d/%d "
+          "}" END_LOG,
           (void *)b.data, quoted.data, b.size, b.cap,
 #if DEBUG
           b.allocs, quoted.allocs

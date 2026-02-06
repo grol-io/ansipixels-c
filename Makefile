@@ -7,7 +7,7 @@
 # (C) 2026 Laurent Demailly <ldemailly at gmail> and contributors.
 # No warranty implied or expressly granted. Licensed under Apache 2.0 (see LICENSE).
 
-all: ansipixels
+all: fps ansipixels
 
 format:
 	clang-format -i *.c *.h
@@ -15,14 +15,21 @@ format:
 DEBUG ?= 1
 SAN ?= -fsanitize=address
 NO_COLOR ?= 0
-CFLAGS = -g -Wall -Wextra -pedantic -Werror $(SAN) -DNO_COLOR=$(NO_COLOR) -DDEBUG=$(DEBUG)
+OPTS ?= -O3 -flto
+CFLAGS = $(OPTS) -Wall -Wextra -pedantic -Werror $(SAN) -DNO_COLOR=$(NO_COLOR) -DDEBUG=$(DEBUG)
 
-ansipixels: buf.o str.o raw.o log.o ansipixels.o main.o
+LIB_OBJS:=buf.o str.o raw.o log.o timer.o ansipixels.o
+
+ansipixels: $(LIB_OBJS) main.o
+	$(CC) $(CFLAGS) -o $@ $^
+	./$@
+
+fps: $(LIB_OBJS) fps.o
 	$(CC) $(CFLAGS) -o $@ $^
 	./$@
 
 clean:
-	rm -rf *.o *.dSYM ansipixels
+	rm -rf *.o *.dSYM ansipixels fps
 
 update-headers:
 	./update_headers.sh

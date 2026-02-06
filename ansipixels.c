@@ -49,6 +49,7 @@ ap_t ap_open(void) {
     LOG_ERROR("ap_open called but ap is already open (%p)", (void *)global_ap);
     return NULL;
   }
+  time_init();
   if (term_raw() != 0) {
     LOG_ERROR("Failed to enter raw mode (%s)", strerror(errno));
     return NULL;

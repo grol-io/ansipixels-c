@@ -12,6 +12,7 @@
 #include "buf.h"
 #include "log.h"
 #include "raw.h"
+#include "timer.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
