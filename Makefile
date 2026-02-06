@@ -9,6 +9,8 @@
 
 all: fps ansipixels run-fps
 
+ci-check: clean fps ansipixels test
+
 format:
 	clang-format -i *.c *.h
 
@@ -35,4 +37,7 @@ clean:
 update-headers:
 	./update_headers.sh
 
-.PHONY: clean all format update-headers run-fps
+# later... add unit tests
+test:
+
+.PHONY: clean all format update-headers run-fps ci-check test
