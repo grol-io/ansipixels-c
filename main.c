@@ -15,7 +15,7 @@ int main(void) {
   // debug print & output stdout
   debug_print_buf(b);
   ssize_t written = write_buf(STDOUT_FILENO, b);
-  LOG_DEBUG("Written bytes: %zd", written);
+  LOG_DEBUG("Wrote %zd bytes", written);
 
   b.size = 0; // clear/reset/reuse
   append_str(&b, UTF8("Hello, 🌎!\n"));

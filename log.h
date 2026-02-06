@@ -19,7 +19,8 @@
 #define END_LOG RESET "\n"
 
 #if DEBUG
-void log_debug(const char *file, int line, const char *fmt, ...);
+void log_debug(const char *file, int line, const char *fmt, ...)
+    __attribute__((format(printf, 3, 4)));
 #define LOG_DEBUG(...) log_debug(__FILE__, __LINE__, __VA_ARGS__)
 #else
 #define LOG_DEBUG(...) ((void)(0 && printf(__VA_ARGS__)))
