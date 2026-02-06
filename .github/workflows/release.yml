@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: ansipixels-linux-amd64
+            asset_name: ansipixels-linux-amd64
+            env:
+              LDFLAGS: -static
+          - os: macos-latest
+            artifact_name: ansipixels-darwin-arm64
+            asset_name: ansipixels-darwin-arm64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build binaries
+        env:
+          LDFLAGS: ${{ matrix.env.LDFLAGS }}
+        run: |
+          make clean libansipixels.a fps ansipixels DEBUG=0 SAN=
+
+      - name: Prepare artifacts
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          DIR_NAME="ansipixels-${VERSION}"
+          mkdir -p "dist/${DIR_NAME}"
+          cp fps ansipixels libansipixels.a *.h README.md LICENSE "dist/${DIR_NAME}/"
+          cd dist
+          tar -czf "../${{ matrix.asset_name }}-${VERSION}.tar.gz" "${DIR_NAME}"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.2.1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ matrix.asset_name }}-*.tar.gz
+          # generate_release_notes: true
