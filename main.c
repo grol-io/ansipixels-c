@@ -47,4 +47,6 @@ int main(void) {
       break; // exit on 'Ctrl-C' or 'Ctrl-D' press
     }
   }
+  free_buf(b);
+  return 0;
 }
